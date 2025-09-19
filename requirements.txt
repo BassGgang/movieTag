@@ -4,3 +4,4 @@ moviepy
 scikit-learn
 janome
 google-generativeai
+python-dotenv

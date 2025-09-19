@@ -1,9 +1,13 @@
 import streamlit as st
 import whisper
-from moviepy import VideoFileClip, AudioFileClip, AudioArrayClip, vfx, concatenate_videoclips
+from moviepy.editor import VideoFileClip
 import os
 import tempfile
 import google.generativeai as genai
+from dotenv import load_dotenv
+
+# .envファイルから環境変数を読み込む
+load_dotenv()
 
 # --- 関数定義 ---
 
@@ -49,11 +53,13 @@ st.set_page_config(page_title="動画からキーワード抽出", layout="wide"
 st.title("講義動画の文字起こし＆キーワード抽出")
 st.info("講義の動画ファイルをアップロードすると、AIが自動で文字起こしを行い、内容を要約して関連キーワードを10個生成します。")
 
-# APIキーの入力
-api_key = st.text_input("Gemini APIキーを入力してください", type="password", help="APIキーはGoogle AI Studioで取得できます。")
+# APIキーを環境変数から取得
+api_key = os.getenv("API_KEY")
 
-# APIキーが入力されたら、ファイルアップローダーなどを表示
-if api_key:
+# APIキーが設定されているか確認
+if not api_key:
+    st.error("エラー: Gemini APIキーが設定されていません。.envファイルに「API_KEY='ご自身のAPIキー'」を追記してください。")
+else:
     # ffmpeg.exeが同じディレクトリにあることを確認
     if not os.path.exists("ffmpeg.exe"):
         st.error("エラー: `ffmpeg.exe` が見つかりません。アプリケーションと同じフォルダに配置してください。")
@@ -83,7 +89,6 @@ if api_key:
                 progress_bar.progress(66)
 
                 status_text.text("Step 3/3: テキストからキーワードを抽出しています...")
-                # APIキーを渡すように変更
                 keywords = extract_keywords(transcribed_text, api_key, num_keywords=10)
                 progress_bar.progress(100)
 
@@ -106,6 +111,3 @@ if api_key:
                     os.remove(video_path)
                 if 'audio_path' in locals() and os.path.exists(audio_path):
                     os.remove(audio_path)
-
-else:
-    st.warning("APIキーを入力すると、動画のアップロード機能が表示されます。")
