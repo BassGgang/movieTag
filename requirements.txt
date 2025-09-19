@@ -1,0 +1,6 @@
+streamlit
+openai-whisper
+moviepy
+scikit-learn
+janome
+google-generativeai
