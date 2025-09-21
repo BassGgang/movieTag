@@ -1,6 +1,6 @@
 import streamlit as st
 import whisper
-from moviepy.editor import VideoFileClip
+from moviepy import VideoFileClip, AudioFileClip, AudioArrayClip, vfx, concatenate_videoclips
 import os
 import tempfile
 import google.generativeai as genai
